@@ -16,7 +16,7 @@ else:
 import local_common as cm
 
 write_summary = params.write_summary
-
+#write_summary = True
 sess = tf.compat.v1.InteractiveSession()
 
 loss = tf.reduce_mean(tf.square(tf.subtract(model.y_, model.y)))
@@ -37,17 +37,17 @@ else:
 
 # create a summary to monitor cost tensor
 if write_summary:
-    tf.summary.scalar("loss", loss)
+    tf.summary.scalar('loss', loss)
 
 # merge all summaries into a single op
+
 if write_summary:
     merged_summary_op = tf.compat.v1.summary.merge_all()
-
 time_start = time.time()
-
 # op to write logs to Tensorboard
 if write_summary:
     summary_writer = tf.compat.v1.summary.FileWriter(params.save_dir, graph=tf.compat.v1.get_default_graph())
+
 
 if params.shuffle_training:
     data.load_imgs()
@@ -55,7 +55,7 @@ if params.shuffle_training:
 # center, curve 50:50%
 data.categorize_imgs()
 
-for i in xrange(params.training_steps):
+for i in range(params.training_steps):
     if params.use_category_normal:
         txx, tyy = data.load_batch_category_normal('train')
     else:
@@ -64,9 +64,9 @@ for i in xrange(params.training_steps):
     train_step.run(feed_dict={model.x: txx, model.y_: tyy})
 
     # write logs at every iteration
-    if write_summary:
-        summary = merged_summary_op.eval(feed_dict={model.x: txx, model.y_: tyy})
-        summary_writer.add_summary(summary, i)
+   # if write_summary:
+    #    summary = merged_summary_op.eval(feed_dict={model.x: txx, model.y_: tyy})
+     #   summary_writer.add_summary(summary, i)
 
     if (i+1) % 10 == 0:
         if params.use_category_normal:

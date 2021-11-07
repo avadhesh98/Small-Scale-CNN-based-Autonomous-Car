@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/avadhesh/thesis/models/DeepPicarModel.ckpt"
+all_model_checkpoint_paths: "/home/avadhesh/thesis/models/DeepPicarModel.ckpt"

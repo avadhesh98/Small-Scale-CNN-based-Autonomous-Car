@@ -163,7 +163,7 @@ def load_batch_category_normal(purpose):
     for c in categories:
         n = len(imgs_cat[p][c])
         assert n > 0
-        ii = random.sample(xrange(0, n), int(params.batch_size/nc))
+        ii = random.sample(range(0, n), int(params.batch_size/nc))
         assert len(ii) == int(params.batch_size/nc)
         for i in ii:
             xx.append(imgs_cat[p][c][i])
