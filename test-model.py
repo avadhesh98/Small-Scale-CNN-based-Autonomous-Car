@@ -15,6 +15,8 @@ import math
 import numpy as np
 import local_common as cm
 
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
+
 def deg2rad(deg):
         return deg * math.pi / 180.0
 def rad2deg(rad):
@@ -22,7 +24,7 @@ def rad2deg(rad):
 
 #Get and set the number of cores to be used by TensorFlow
 NCPU=int(sys.argv[1])
-config = tf.ConfigProto(intra_op_parallelism_threads=NCPU, inter_op_parallelism_threads=NCPU, \
+config = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=NCPU, inter_op_parallelism_threads=NCPU, \
                         allow_soft_placement=True, device_count = {'CPU': 1})
 
 #The max number of frames to be processed, and the number of frames already processed
@@ -30,14 +32,14 @@ NFRAMES = 1000
 curFrame = 0
 
 #Load the model
-sess = tf.InteractiveSession(config=config)
-saver = tf.train.Saver()
+sess = tf.compat.v1.InteractiveSession(config=config)
+saver = tf.compat.v1.train.Saver()
 model_load_path = cm.jn(params.save_dir, params.model_load_file)
 saver.restore(sess, model_load_path)
 
 #List the epochs to be used for testing
 epoch_ids = sorted(list(set(itertools.chain(*params.epochs.values()))))
-epoch_ids = [6,6]
+epoch_ids = [2,4]
 
 #Create lists for tracking operation timings
 cap_time_list = []
@@ -61,7 +63,7 @@ if numCR > 1:
 
 #Process all epochs
 for epoch_id in epoch_ids:
-    print '---------- processing video for epoch {} ----------'.format(epoch_id)
+    print ('---------- processing video for epoch {} ----------'.format(epoch_id))
 
     #Get the number of frames in the epoch
     vid_path = cm.jn(params.data_dir, 'out-video-{}.avi'.format(epoch_id))
@@ -72,9 +74,9 @@ for epoch_id in epoch_ids:
     machine_steering = []
 
     #Process the current epoch while recording the operation execution times
-    print 'performing inference...'
+    print ('performing inference...')
     time_start = time.time()
-    for frame_id in xrange(frame_count):
+    for frame_id in range(frame_count):
         if curFrame < NFRAMES:
             cam_start = time.time()
             ret, img = cap.read()
@@ -93,7 +95,7 @@ for epoch_id in epoch_ids:
             pred_time = (pred_end - pred_start)*1000
             tot_time  = (pred_end - cam_start)*1000
 
-            print 'pred: {:0.2f} deg. took: {:0.2f} ms | cam={:0.2f} prep={:0.2f} pred={:0.2f}'.format(deg, tot_time, cam_time, prep_time, pred_time)
+            print ('pred: {:0.2f} deg. took: {:0.2f} ms | cam={:0.2f} prep={:0.2f} pred={:0.2f}'.format(deg, tot_time, cam_time, prep_time, pred_time))
             if frame_id > 0:
                 tot_time_list.append(tot_time)
                 machine_steering.append(deg)
@@ -103,20 +105,20 @@ for epoch_id in epoch_ids:
 
     fps = frame_count / (time.time() - time_start)
     
-    print 'completed inference, total frames: {}, average fps: {} Hz'.format(frame_count, round(fps, 1))
+    print ('completed inference, total frames: {}, average fps: {} Hz'.format(frame_count, round(fps, 1)))
     
 #Interrupt all bandwidth co-runners
 if numCR > 1:
         os.system('killall -SIGINT bandwidth')
 
 #Calculate and display statistics of the total inferencing times
-print "count:", len(tot_time_list)
-print "mean:", np.mean(tot_time_list)
-print "max:", np.max(tot_time_list)
-print "99.999pct:", np.percentile(tot_time_list, 99.999)
-print "99.99pct:", np.percentile(tot_time_list, 99.99)
-print "99.9pct:", np.percentile(tot_time_list, 99.9)
-print "99pct:", np.percentile(tot_time_list, 99)
-print "min:", np.min(tot_time_list)
-print "median:", np.median(tot_time_list)
-print "stdev:", np.std(tot_time_list) 
+print ("count:", len(tot_time_list))
+print ("mean:", np.mean(tot_time_list))
+print ("max:", np.max(tot_time_list))
+print ("99.999pct:", np.percentile(tot_time_list, 99.999))
+print ("99.99pct:", np.percentile(tot_time_list, 99.99))
+print ("99.9pct:", np.percentile(tot_time_list, 99.9))
+print ("99pct:", np.percentile(tot_time_list, 99))
+print ("min:", np.min(tot_time_list))
+print ("median:", np.median(tot_time_list))
+print ("stdev:", np.std(tot_time_list)) 
