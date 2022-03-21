@@ -114,7 +114,7 @@ def visualize(epoch_id, machine_steering, out_dir, perform_smoothing=False,
 
     for f_cur in xrange(len(machine_steering)):
         if (f_cur != 0) and (f_cur % verbose_progress_step == 0):
-            print 'completed {} of {} frames'.format(f_cur, len(machine_steering))
+            print ('completed {} of {} frames'.format(f_cur, len(machine_steering)))
 
         if (frame_count_limit is not None) and (f_cur >= frame_count_limit):
             break

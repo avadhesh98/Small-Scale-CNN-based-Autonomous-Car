@@ -26,15 +26,15 @@ def deg2rad(deg):
 def rad2deg(rad):
         return 180.0 * rad / math.pi
 
-sess = tf.InteractiveSession()
-saver = tf.train.Saver()
+sess = tf.compat.v1.InteractiveSession()
+saver = tf.compat.v1.train.Saver()
 model_load_path = cm.jn(params.save_dir, params.model_load_file)
 saver.restore(sess, model_load_path)
 
 epoch_ids = sorted(list(set(itertools.chain(*params.epochs.values()))))
 
 def process_epoch(epoch_id):
-    print '---------- processing video for epoch {} ----------'.format(epoch_id)
+    print ('---------- processing video for epoch {} ----------'.format(epoch_id))
     vid_path = cm.jn(params.data_dir, 'out-video-{}.avi'.format(epoch_id))
     frame_count = cm.frame_count(vid_path)        
     
@@ -49,9 +49,9 @@ def process_epoch(epoch_id):
 
     machine_steering = []
 
-    print 'performing inference...'
+    print ('performing inference...')
     time_start = time.time()
-    for frame_id in xrange(frame_count):
+    for frame_id in range(frame_count):
         ret, img = cap.read()
         assert ret
 
@@ -59,7 +59,7 @@ def process_epoch(epoch_id):
         img = preprocess.preprocess(img)
 
         pred_start = time.time()
-        rad = model.y.eval(feed_dict={model.x: [img], model.keep_prob: 1.0})[0][0]
+        rad = model.y.eval(feed_dict={model.x: [img]})[0][0]
         deg = rad2deg(rad)
         pred_end   = time.time()
 
@@ -88,7 +88,7 @@ for epoch_id in epoch_ids:
     steering = process_epoch(epoch_id)
     job_list.append([epoch_id, steering])
 
-print "visualize epochs in parallel"    
+print ("visualize epochs in parallel")    
 num_cores = int(multiprocessing.cpu_count()/2)
 Parallel (n_jobs = num_cores) (delayed (visualize_epoch) (job) for job in job_list)
 

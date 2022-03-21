@@ -23,6 +23,10 @@ def preprocess(img):
     padding = int(round((img.shape[1] - w) / 2))
     # img = img[y1:y2, padding:-padding]
     img = cv2.resize(img, (img_width, img_height))
-    img = img / 255.
+
+    res = cv2.imwrite('/home/avadhesh/thesis/test.jpg',img)
+    print(res)
+
+    img = img / 255.00
     return img
 

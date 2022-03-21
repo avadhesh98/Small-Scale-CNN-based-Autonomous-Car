@@ -26,7 +26,7 @@ model="model-5conv_3fc"
 model_load_file="DeepPicarModel.ckpt"
 model_load_file2="DeepPicarModel2.ckpt"
 model_load_file3="DeepPicarModel3.ckpt"
-model_load_file4="DeepPicarModel4.ckpt"
+model_load_file4="DeepPicarModel.ckpt"
 model_save_file=model_load_file
 
 ##########################################################

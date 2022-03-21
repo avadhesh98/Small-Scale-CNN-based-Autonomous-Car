@@ -78,12 +78,12 @@ for i in range(params.training_steps):
         v_loss = loss.eval(feed_dict={model.x: vxx, model.y_: vyy})
         print ("step {} of {}, train loss {}, val loss {}".format(i+1, params.training_steps, t_loss, v_loss))
 
-    if (i+1) % 100 == 0:
-        if not os.path.exists(params.save_dir):
-            os.makedirs(params.save_dir)
-        checkpoint_path = os.path.join(params.save_dir, params.model_save_file)
-        filename = saver.save(sess, checkpoint_path)
+    # if (i+1) % 100 == 0:
+    #     if not os.path.exists(params.save_dir):
+    #         os.makedirs(params.save_dir)
+    #     checkpoint_path = os.path.join(params.save_dir, params.model_save_file)
+    #     filename = saver.save(sess, checkpoint_path)
 
-        time_passed = cm.pretty_running_time(time_start)
-        time_left = cm.pretty_time_left(time_start, i, params.training_steps)
-        print ("Model saved. Time passed: {}. Time left: {}".format(time_passed, time_left))
+    #     time_passed = cm.pretty_running_time(time_start)
+    #     time_left = cm.pretty_time_left(time_start, i, params.training_steps)
+    #     print ("Model saved. Time passed: {}. Time left: {}".format(time_passed, time_left))
