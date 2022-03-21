@@ -38,8 +38,6 @@ print(epoch_ids)
 
 tot_time_list = []
 
-gst_str = "nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=NV12, framerate=30/1 ! nvvidconv ! video/x-raw, width=1024, height=768, format=BGRx ! videoconvert ! video/x-raw, format=BGR ! appsink drop=1"
-
 curFrame = 0
 for epoch_id in epoch_ids:
     print ('---------- processing video for epoch {} ----------'.format(epoch_id))
@@ -48,7 +46,7 @@ for epoch_id in epoch_ids:
     vid_path = cm.jn(params.data_dir, 'out-video-{}.avi'.format(epoch_id))
     assert os.path.isfile(vid_path)
     frame_count = cm.frame_count(vid_path)
-    cap = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
+    cap = cv2.VideoCapture(vid_path)
 
     machine_steering = []
 
@@ -56,16 +54,12 @@ for epoch_id in epoch_ids:
     time_start = time.time()
     for frame_id in range(frame_count):
         if curFrame < NFRAMES:
-            cv2.waitKey(500)
             cam_start = time.time()
             ret, img = cap.read()
             assert ret
-            print(img.shape)
-            #cv2.imshow('captured',img)
 
             prep_start = time.time()
             img = preprocess.preprocess(img)
-            print(img.shape)
 
             pred_start = time.time()
             rad = model.y.eval(feed_dict={model.x: [img]})[0][0]
