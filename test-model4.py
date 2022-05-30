@@ -3,6 +3,7 @@ from __future__ import division
 
 import tensorflow as tf
 import params
+from adafruit_motorkit import MotorKit
 model = __import__(params.model)
 import cv2
 import subprocess as sp
@@ -51,17 +52,18 @@ for epoch_id in epoch_ids:
     cap = cv2.VideoCapture(gst_str, cv2.CAP_GSTREAMER)
 
     machine_steering = []
-
+    kit = MotorKit()
     print ('performing inference...')
     time_start = time.time()
     for frame_id in range(frame_count):
         if curFrame < NFRAMES:
-            cv2.waitKey(500)
+            #cv2.waitKey(100)
             cam_start = time.time()
             ret, img = cap.read()
             assert ret
             print(img.shape)
             #cv2.imshow('captured',img)
+            confirm = cv2.imwrite('/home/avadhesh/thesis/test.jpg', img);
 
             prep_start = time.time()
             img = preprocess.preprocess(img)
@@ -72,6 +74,24 @@ for epoch_id in epoch_ids:
             deg = rad2deg(rad)
             pred_end   = time.time()
 
+ #          if ((deg>-10) and (deg<=15)):
+ #              # deg = 0
+ #              kit.motor1.throttle = 0.5 
+ #              kit.motor2.throttle = 0.5
+ #              kit.motor3.throttle = 0.5
+ #              kit.motor4.throttle = 0.5
+ #          elif(deg<-10):
+ #              # deg = -30
+ #              kit.motor1.throttle = 0 
+ #              kit.motor2.throttle = 0
+ #              kit.motor3.throttle = 0
+ #              kit.motor4.throttle = 0
+ #          elif(deg>15):
+ #              # deg = 30
+ #              kit.motor1.throttle = 0 
+ #              kit.motor2.throttle = 0
+ #              kit.motor3.throttle = 0
+ #              kit.motor4.throttle = 0
             cam_time  = (prep_start - cam_start)*1000
             prep_time = (pred_start - prep_start)*1000
             pred_time = (pred_end - pred_start)*1000
@@ -95,7 +115,10 @@ for epoch_id in epoch_ids:
     # print 'performing visualization...'
     # visualize.visualize(epoch_id, machine_steering, params.out_dir,
     #                     verbose=True, frame_count_limit=None)
-    
+kit.motor1.throttle = 0
+kit.motor2.throttle = 0
+kit.motor3.throttle = 0
+kit.motor4.throttle = 0    
 print ("count:", len(tot_time_list))
 print ("mean:", np.mean(tot_time_list))
 print ("max:", np.max(tot_time_list))
